@@ -1,0 +1,74 @@
+import streamlit as st
+import pandas as pd
+
+
+# -----------------------------
+# ETF 샘플 데이터
+# -----------------------------
+etf_data = pd.DataFrame({
+"ETF 이름": [
+"TIGER 미국나스닥100", "KODEX 2차전지산업", "KBSTAR 글로벌AI",
+"KODEX 배당가치", "TIGER 미국S&P500", "KODEX 미국채10년",
+"KODEX 국채10년", "ARIRANG 고배당주", "TIGER 미국달러단기채"
+],
+"자산군": [
+"해외주식", "국내주식", "글로벌주식",
+"국내주식", "해외주식", "채권",
+"채권", "국내주식", "채권"
+],
+"주요 섹터": [
+"IT, 테크", "2차전지", "AI, 테크",
+"고배당, 가치주", "지수추종", "미국 국채",
+"국내 국채", "고배당주", "달러채권"
+],
+"운용보수 (%)": [0.07, 0.45, 0.3, 0.2, 0.09, 0.15, 0.15, 0.25, 0.2],
+"최근 1년 수익률 (%)": [24.5, 33.1, 18.4, 7.2, 19.8, 3.1, 2.8, 9.7, 5.3]
+})
+
+
+# -----------------------------
+# 전략 매핑 함수
+# -----------------------------
+def map_strategy(age, risk, theme):
+if age < 35 and risk == "공격형":
+if "AI" in theme:
+return "성장 테마 집중형"
+return "성장 중심형"
+elif 35 <= age < 55:
+if risk == "중립형":
+return "가치배당 혼합형"
+elif risk == "안정형":
+return "채권 중심 안정형"
+elif age >= 55:
+return "은퇴 대비 안정형"
+return "기본형"
+
+
+# -----------------------------
+# 전략에 따른 ETF 추천
+# -----------------------------
+def recommend_etfs(strategy):
+if strategy == "성장 테마 집중형":
+return ["TIGER 미국나스닥100", "KODEX 2차전지산업", "KBSTAR 글로벌AI"]
+elif strategy == "가치배당 혼합형":
+return ["KODEX 배당가치", "TIGER 미국S&P500", "ARIRANG 고배당주"]
+elif strategy == "채권 중심 안정형":
+return ["KODEX 국채10년", "TIGER 미국달러단기채", "KODEX 미국채10년"]
+elif strategy == "은퇴 대비 안정형":
+return ["KODEX 국채10년", "ARIRANG 고배당주", "TIGER 미국달러단기채"]
+else:
+return ["TIGER 미국S&P500", "KODEX 배당가치", "KODEX 국채10년"]
+
+
+# -----------------------------
+# Streamlit UI
+# -----------------------------
+st.title("📊 AI 기반 개인 맞춤형 ETF 추천")
+
+
+with st.form("user_input"):
+age = st.number_input("나이", min_value=18, max_value=80, value=35)
+invest_amount = st.number_input("투자 가능 금액 (만원)", value=1000)
+risk = st.selectbox("투자 성향", ["공격형", "중립형", "안정형"])
+theme = st.multiselect("관심 테마 (복수 선택 가능)", ["AI", "친환경", "배당", "글로벌", "채권"])
+rebal = st.selectbox("리밸런싱 주기 선호", ["매월", "분기별", "매년", "없음"])
